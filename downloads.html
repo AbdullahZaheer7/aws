@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Downloads - CodeCrafters</title>
+    <style>
+        body { font-family: Arial; margin: 0; padding: 20px; }
+        nav { background: #2c3e50; padding: 10px; color: white; }
+        nav a { color: white; margin: 0 15px; text-decoration: none; }
+        .container { max-width: 900px; margin: 20px auto; }
+        .grid { display: grid; gap: 12px; grid-template-columns: 1fr; }
+        @media (min-width: 700px) { .grid { grid-template-columns: 1fr 1fr; } }
+        .card { border: 1px solid #ddd; padding: 15px; }
+        .download-btn { background: #3498db; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; }
+        .download-btn:hover { background: #2980b9; }
+        .status { margin: 10px 0; padding: 10px; border-radius: 6px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .muted { color: #666; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="projects.html">Projects</a>
+        <a href="downloads.html">Downloads</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+
+    <div class="container">
+        <h1>Downloads</h1>
+        <p class="muted">All downloads are protected with temporary secure links that expire after 5 minutes.</p>
+
+        <div class="grid" id="downloads">
+            <div class="card">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                    <div>
+                        <div><strong>📄 Internship Guide</strong></div>
+                        <div class="muted" style="font-size: 0.95em;">Quick start + project workflow.</div>
+                    </div>
+                    <button class="download-btn" onclick="downloadFile('Internship-Guide.pdf')">Download</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                    <div>
+                        <div><strong>📄 Project Alpha Documentation</strong></div>
+                        <div class="muted" style="font-size: 0.95em;">Architecture, API, and examples.</div>
+                    </div>
+                    <button class="download-btn" onclick="downloadFile('Project-Alpha-Documentation.pdf')">Download</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                    <div>
+                        <div><strong>📄 API Reference Manual</strong></div>
+                        <div class="muted" style="font-size: 0.95em;">Endpoints and authentication notes.</div>
+                    </div>
+                    <button class="download-btn" onclick="downloadFile('API-Reference-Manual.pdf')">Download</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                    <div>
+                        <div><strong>📄 System Design Report</strong></div>
+                        <div class="muted" style="font-size: 0.95em;">Scalability and security overview.</div>
+                    </div>
+                    <button class="download-btn" onclick="downloadFile('System-Design-Report.pdf')">Download</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="status" class="status" style="display:none;"></div>
+    </div>
+
+    <script>
+        // Matches the approach used in project.html
+        const API_URL = 'https://x6ht4v0ow8.execute-api.us-east-1.amazonaws.com/prod/download';
+
+        function setStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = message;
+            statusDiv.className = 'status';
+            if (type) statusDiv.classList.add(type);
+        }
+
+        async function downloadFile(fileName) {
+            setStatus('Generating secure download link...', null);
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file_name: fileName })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to generate download link');
+                }
+
+                setStatus('✅ Download starting... Link valid for 5 minutes', 'success');
+
+                const link = document.createElement('a');
+                link.href = data.url;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                setStatus('❌ Error: ' + error.message, 'error');
+                console.error('Download error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
