@@ -30,7 +30,7 @@
 
     <div class="container">
         <h1>Downloads</h1>
-        <p class="muted">All downloads are protected with temporary secure links that expire after 5 minutes.</p>
+        <p class="muted">All downloads are available directly from local files.</p>
 
         <div class="grid" id="downloads">
             <div class="card">
@@ -39,7 +39,7 @@
                         <div><strong>📄 Internship Guide</strong></div>
                         <div class="muted" style="font-size: 0.95em;">Quick start + project workflow.</div>
                     </div>
-                    <button class="download-btn" onclick="downloadFile('Internship-Guide.pdf')">Download</button>
+                    <a class="download-btn" href="./docs/Internship-Guide.pdf" download>Download</a>
                 </div>
             </div>
 
@@ -49,7 +49,7 @@
                         <div><strong>📄 Project Alpha Documentation</strong></div>
                         <div class="muted" style="font-size: 0.95em;">Architecture, API, and examples.</div>
                     </div>
-                    <button class="download-btn" onclick="downloadFile('Project-Alpha-Documentation.pdf')">Download</button>
+                    <a class="download-btn" href="./docs/Project-Alpha-Documentation.pdf" download>Download</a>
                 </div>
             </div>
 
@@ -59,7 +59,7 @@
                         <div><strong>📄 API Reference Manual</strong></div>
                         <div class="muted" style="font-size: 0.95em;">Endpoints and authentication notes.</div>
                     </div>
-                    <button class="download-btn" onclick="downloadFile('API-Reference-Manual.pdf')">Download</button>
+                    <a class="download-btn" href="./docs/API-Reference-Manual.pdf" download>Download</a>
                 </div>
             </div>
 
@@ -69,54 +69,11 @@
                         <div><strong>📄 System Design Report</strong></div>
                         <div class="muted" style="font-size: 0.95em;">Scalability and security overview.</div>
                     </div>
-                    <button class="download-btn" onclick="downloadFile('System-Design-Report.pdf')">Download</button>
+                    <a class="download-btn" href="./docs/System-Design-Report.pdf" download>Download</a>
                 </div>
             </div>
         </div>
 
-        <div id="status" class="status" style="display:none;"></div>
     </div>
-
-    <script>
-        // Matches the approach used in project.html
-        const API_URL = 'https://x6ht4v0ow8.execute-api.us-east-1.amazonaws.com/prod/download';
-
-        function setStatus(message, type) {
-            const statusDiv = document.getElementById('status');
-            statusDiv.style.display = 'block';
-            statusDiv.textContent = message;
-            statusDiv.className = 'status';
-            if (type) statusDiv.classList.add(type);
-        }
-
-        async function downloadFile(fileName) {
-            setStatus('Generating secure download link...', null);
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ file_name: fileName })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to generate download link');
-                }
-
-                setStatus('✅ Download starting... Link valid for 5 minutes', 'success');
-
-                const link = document.createElement('a');
-                link.href = data.url;
-                link.download = fileName;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } catch (error) {
-                setStatus('❌ Error: ' + error.message, 'error');
-                console.error('Download error:', error);
-            }
-        }
-    </script>
 </body>
 </html>
